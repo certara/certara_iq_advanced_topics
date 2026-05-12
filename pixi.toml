@@ -1,0 +1,17 @@
+[workspace]
+channels = ["conda-forge"]
+name = "advanced-topics"
+platforms = ["linux-aarch64", "linux-64"]
+
+[dependencies]
+python = { version = "3.14.*" }
+
+[pypi-dependencies]
+abm = "==2.2.2"
+ipykernel = "==7.*"
+plotnine = "==0.15.*"
+utilities = { path = "utilities", editable = true }
+
+[system-requirements]
+libc = "2.39"
+
