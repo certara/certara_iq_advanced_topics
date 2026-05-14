@@ -1,4 +1,4 @@
-# Monospecific anti-ligand 4 compartment in vivo model
+# Monospecific anti-ligand 3 compartment in vivo model
 
 %% ReactionModel@1
 
@@ -15,31 +15,23 @@ default_state_unit = nmol
 v_c_L :L := 2.5
 v_p_L :L := 12.8
 v_d_L :L := 0.1
-v_t_L :L := 0.1
 
 # --- Steady-state concentrations ---
 
-# Receptors, membrane and soluble
+# Receptors, membrane
 css_R1_total_c_rpc :1 := 10000
-css_S1_c_nM :nM := 0
 css_R1_total_p_rpc :1 := 10000
-css_S1_p_nM :nM := 0
 css_R1_total_d_rpc :1 := 10000
-css_S1_d_nM :nM := 0
-css_R1_total_t_rpc :1 := 10000
-css_S1_t_nM :nM := 0
 
 # Ligands
 css_L1_free_c_nM :nM := 0.05
 css_L1_free_p_nM :nM := 0.05
 css_L1_free_d_nM :nM := 0.05
-css_L1_free_t_nM :nM := 0.05
 
 # --- Turnover rates ---
 
 # Endogenous species
 thalf_R1_hr :hr := 1
-thalf_S1_hr :hr := 0.5
 thalf_L1_hr :hr := 0.5
 
 # Free drug
@@ -47,33 +39,25 @@ thalf_ab_day :d := 28
 scale_thalf_ab_c :1 := 1
 scale_thalf_ab_p :1 := 1
 scale_thalf_ab_d :1 := 1
-scale_thalf_ab_t :1 := 1
 
 
 # --- Transport ---
 
 # Endogenous species partitioning time scales
-tdist_cp_S1_hr :hr := 30
 tdist_cp_L1_hr :hr := 30
-tdist_cd_S1_hr :hr := 30
 tdist_cd_L1_hr :hr := 30
-tdist_ct_S1_hr :hr := 30
-tdist_ct_L1_hr :hr := 30
 
 # Drug partitioning coefficients and time scales
 pdist_cp_ab :1 := 0.190625
 pdist_cd_ab :1 := 0.3
-pdist_ct_ab :1 := 0.3
 tdist_cp_ab_hr :hr := 30
 tdist_cd_ab_hr :hr := 30
-tdist_ct_ab_hr :hr := 30
 
 # --- Cell parameters ---
 
 R_cell_number_c :1 := 3000000000.0
 R_cell_number_p :1 := 13000000000.0
 R_cell_number_d :1 := 100000000.0
-R_cell_number_t :1 := 100000000.0
 R_cell_diameter_um :um = 10
 
 # --- Binding ---
@@ -85,7 +69,6 @@ valency_ab_L1 :1 := 2
 scale_Kd_ab_L1_c :1 := 1
 scale_Kd_ab_L1_p :1 := 1
 scale_Kd_ab_L1_d :1 := 1
-scale_Kd_ab_L1_t :1 := 1
 
 # Receptor-ligand binding
 kon_L1_R1 :(1/nM/s) := 1e-3
@@ -107,13 +90,11 @@ thalf_abs_day :d := 2.5
 Kd_ab_L1_c_nM = Kd_ab_L1_nM * scale_Kd_ab_L1_c
 Kd_ab_L1_p_nM = Kd_ab_L1_nM * scale_Kd_ab_L1_p
 Kd_ab_L1_d_nM = Kd_ab_L1_nM * scale_Kd_ab_L1_d
-Kd_ab_L1_t_nM = Kd_ab_L1_nM * scale_Kd_ab_L1_t
 
 # Compartment-specific drug elimination rates
 thalf_ab_c_day = thalf_ab_day * scale_thalf_ab_c
 thalf_ab_p_day = thalf_ab_day * scale_thalf_ab_p
 thalf_ab_d_day = thalf_ab_day * scale_thalf_ab_d
-thalf_ab_t_day = thalf_ab_day * scale_thalf_ab_t
 
 # Half-times in standard units (seconds)
 sec_per_hr = 3600:(s/hr)
@@ -121,53 +102,30 @@ sec_per_day = sec_per_hr * 24: (hr/d)
 thalf_abs = thalf_abs_day * sec_per_day
 thalf_L1 = thalf_L1_hr * sec_per_hr
 thalf_R1 = thalf_R1_hr * sec_per_hr
-thalf_S1 = thalf_S1_hr * sec_per_hr
 tdist_cp_L1 = tdist_cp_L1_hr * sec_per_hr
-tdist_cp_S1 = tdist_cp_S1_hr * sec_per_hr
 tdist_cd_L1 = tdist_cd_L1_hr * sec_per_hr
-tdist_cd_S1 = tdist_cd_S1_hr * sec_per_hr
-tdist_ct_L1 = tdist_ct_L1_hr * sec_per_hr
-tdist_ct_S1 = tdist_ct_S1_hr * sec_per_hr
 thalf_ab_c = thalf_ab_c_day * sec_per_day
 thalf_ab_p = thalf_ab_p_day * sec_per_day
 thalf_ab_d = thalf_ab_d_day * sec_per_day
-thalf_ab_t = thalf_ab_t_day * sec_per_day
 tdist_cp_ab = tdist_cp_ab_hr * sec_per_hr
 tdist_cd_ab = tdist_cd_ab_hr * sec_per_hr
-tdist_ct_ab = tdist_ct_ab_hr * sec_per_hr
 
 number_per_nmol = 6.022e14 :(1/nmol)
 # Synthesis rates of ligand
 ksyn_L1_c = css_L1_free_c_nM*log(2)*(Kd_L1_R1_nM*kon_L1_R1*number_per_nmol*thalf_R1*v_c_L + R_cell_number_c*css_R1_total_c_rpc*kon_L1_R1*thalf_L1 + css_L1_free_c_nM*kon_L1_R1*number_per_nmol*thalf_R1*v_c_L + log(2)*number_per_nmol*v_c_L)/(number_per_nmol*thalf_L1*(Kd_L1_R1_nM*kon_L1_R1*thalf_R1 + css_L1_free_c_nM*kon_L1_R1*thalf_R1 + log(2)))
 ksyn_L1_p = css_L1_free_p_nM*log(2)*(Kd_L1_R1_nM*kon_L1_R1*number_per_nmol*thalf_R1*v_p_L + R_cell_number_p*css_R1_total_p_rpc*kon_L1_R1*thalf_L1 + css_L1_free_p_nM*kon_L1_R1*number_per_nmol*thalf_R1*v_p_L + log(2)*number_per_nmol*v_p_L)/(number_per_nmol*thalf_L1*(Kd_L1_R1_nM*kon_L1_R1*thalf_R1 + css_L1_free_p_nM*kon_L1_R1*thalf_R1 + log(2)))
 ksyn_L1_d = css_L1_free_d_nM*log(2)*(Kd_L1_R1_nM*kon_L1_R1*number_per_nmol*thalf_R1*v_d_L + R_cell_number_d*css_R1_total_d_rpc*kon_L1_R1*thalf_L1 + css_L1_free_d_nM*kon_L1_R1*number_per_nmol*thalf_R1*v_d_L + log(2)*number_per_nmol*v_d_L)/(number_per_nmol*thalf_L1*(Kd_L1_R1_nM*kon_L1_R1*thalf_R1 + css_L1_free_d_nM*kon_L1_R1*thalf_R1 + log(2)))
-ksyn_L1_t = css_L1_free_t_nM*log(2)*(Kd_L1_R1_nM*kon_L1_R1*number_per_nmol*thalf_R1*v_t_L + R_cell_number_t*css_R1_total_t_rpc*kon_L1_R1*thalf_L1 + css_L1_free_t_nM*kon_L1_R1*number_per_nmol*thalf_R1*v_t_L + log(2)*number_per_nmol*v_t_L)/(number_per_nmol*thalf_L1*(Kd_L1_R1_nM*kon_L1_R1*thalf_R1 + css_L1_free_t_nM*kon_L1_R1*thalf_R1 + log(2)))
 
 # Synthesis rates of receptor
 ksyn_R1_c = R_cell_number_c*css_R1_total_c_rpc*log(2)/(number_per_nmol*thalf_R1)
 ksyn_R1_p = R_cell_number_p*css_R1_total_p_rpc*log(2)/(number_per_nmol*thalf_R1)
 ksyn_R1_d = R_cell_number_d*css_R1_total_d_rpc*log(2)/(number_per_nmol*thalf_R1)
-ksyn_R1_t = R_cell_number_t*css_R1_total_t_rpc*log(2)/(number_per_nmol*thalf_R1)
-
-# Shedding rate constants
-ksyn_S1_c = css_S1_c_nM*log(2)*v_c_L/thalf_S1
-ksyn_S1_p = css_S1_p_nM*log(2)*v_p_L/thalf_S1
-ksyn_S1_d = css_S1_d_nM*log(2)*v_d_L/thalf_S1
-ksyn_S1_t = css_S1_t_nM*log(2)*v_t_L/thalf_S1
 
 # Transport rate constants for endogenous species
 kcp_L1  =  css_L1_free_p_nM*v_p_L*log(2)/(tdist_cp_L1*(css_L1_free_c_nM*v_c_L + css_L1_free_p_nM*v_p_L + 1e-16:nmol))
 kpc_L1  =  css_L1_free_c_nM*v_c_L*log(2)/(tdist_cp_L1*(css_L1_free_c_nM*v_c_L + css_L1_free_p_nM*v_p_L + 1e-16:nmol))
-kcp_S1  =  css_S1_p_nM*v_p_L*log(2)/(tdist_cp_S1*(css_S1_c_nM*v_c_L + css_S1_p_nM*v_p_L + 1e-16:nmol))
-kpc_S1  =  css_S1_c_nM*v_c_L*log(2)/(tdist_cp_S1*(css_S1_c_nM*v_c_L + css_S1_p_nM*v_p_L + 1e-16:nmol))
 kcd_L1  =  css_L1_free_d_nM*v_d_L*log(2)/(tdist_cd_L1*(css_L1_free_c_nM*v_c_L + css_L1_free_d_nM*v_d_L + 1e-16:nmol))
 kdc_L1  =  css_L1_free_c_nM*v_c_L*log(2)/(tdist_cd_L1*(css_L1_free_c_nM*v_c_L + css_L1_free_d_nM*v_d_L + 1e-16:nmol))
-kcd_S1  =  css_S1_d_nM*v_d_L*log(2)/(tdist_cd_S1*(css_S1_c_nM*v_c_L + css_S1_d_nM*v_d_L + 1e-16:nmol))
-kdc_S1  =  css_S1_c_nM*v_c_L*log(2)/(tdist_cd_S1*(css_S1_c_nM*v_c_L + css_S1_d_nM*v_d_L + 1e-16:nmol))
-kct_L1  =  css_L1_free_t_nM*v_t_L*log(2)/(tdist_ct_L1*(css_L1_free_c_nM*v_c_L + css_L1_free_t_nM*v_t_L + 1e-16:nmol))
-ktc_L1  =  css_L1_free_c_nM*v_c_L*log(2)/(tdist_ct_L1*(css_L1_free_c_nM*v_c_L + css_L1_free_t_nM*v_t_L + 1e-16:nmol))
-kct_S1  =  css_S1_t_nM*v_t_L*log(2)/(tdist_ct_S1*(css_S1_c_nM*v_c_L + css_S1_t_nM*v_t_L + 1e-16:nmol))
-ktc_S1  =  css_S1_c_nM*v_c_L*log(2)/(tdist_ct_S1*(css_S1_c_nM*v_c_L + css_S1_t_nM*v_t_L + 1e-16:nmol))
 
 # ======= Compartments =======
 
@@ -175,7 +133,6 @@ ktc_S1  =  css_S1_c_nM*v_c_L*log(2)/(tdist_ct_S1*(css_S1_c_nM*v_c_L + css_S1_t_n
 central ~ 3 = v_c_L
 peripheral ~ 3 = v_p_L
 disease ~ 3 = v_d_L
-tox ~ 3 = v_t_L
 
 # Membrane
 um_per_dm = 1e5 :(um/dm)
@@ -184,7 +141,6 @@ R_cell_diameter = R_cell_diameter_um / um_per_dm
 membrane_c ~ 2 = R_cell_number_c * pi * R_cell_diameter^2 + 1e-16:dm^2
 membrane_p ~ 2 = R_cell_number_p * pi * R_cell_diameter^2 + 1e-16:dm^2
 membrane_d ~ 2 = R_cell_number_d * pi * R_cell_diameter^2 + 1e-16:dm^2
-membrane_t ~ 2 = R_cell_number_t * pi * R_cell_diameter^2 + 1e-16:dm^2
 
 # ======= States ========
 
@@ -200,10 +156,6 @@ free_R1_c_0 = R_cell_number_c*css_R1_total_c_rpc*(Kd_L1_R1_nM*kon_L1_R1*thalf_R1
 R1_c @ membrane_c *= free_R1_c_0
 total_R1_c_0 = free_R1_c_0 + L1_R1_c_0
 total_L1_c_0 = free_L1_c_0 + L1_R1_c_0
-
-free_S1_c_0 = css_S1_c_nM * v_c_L
-total_S1_c_0 = free_S1_c_0
-S1_c @ central *= free_S1_c_0
 
 # Drug species
 ab_0_0_c @ central *= 0
@@ -224,10 +176,6 @@ R1_p @ membrane_p *= free_R1_p_0
 total_R1_p_0 = free_R1_p_0 + L1_R1_p_0
 total_L1_p_0 = free_L1_p_0 + L1_R1_p_0
 
-free_S1_p_0 = css_S1_p_nM * v_p_L
-total_S1_p_0 = free_S1_p_0
-S1_p @ peripheral *= free_S1_p_0
-
 # Drug species
 ab_0_0_p @ peripheral *= 0
 ab_0_L1_p @ peripheral *= 0
@@ -247,38 +195,11 @@ R1_d @ membrane_d *= free_R1_d_0
 total_R1_d_0 = free_R1_d_0 + L1_R1_d_0
 total_L1_d_0 = free_L1_d_0 + L1_R1_d_0
 
-free_S1_d_0 = css_S1_d_nM * v_d_L
-total_S1_d_0 = free_S1_d_0
-S1_d @ disease *= free_S1_d_0
-
 # Drug species
 ab_0_0_d @ disease *= 0
 ab_0_L1_d @ disease *= 0
 ab_L1_0_d @ disease *= 0
 ab_L1_L1_d @ disease *= 0
-
-# --- tox ---
-
-# Endogenous species
-# NB: free/total..._0 are used in Reduction metrics
-L1_R1_t_0 = R_cell_number_t*css_L1_free_t_nM*css_R1_total_t_rpc*kon_L1_R1*thalf_R1/(number_per_nmol*(Kd_L1_R1_nM*kon_L1_R1*thalf_R1 + css_L1_free_t_nM*kon_L1_R1*thalf_R1 + log(2)))
-L1_R1_t @ membrane_t *= L1_R1_t_0
-free_L1_t_0 = css_L1_free_t_nM*v_t_L
-L1_t @ tox *= free_L1_t_0
-free_R1_t_0 = R_cell_number_t*css_R1_total_t_rpc*(Kd_L1_R1_nM*kon_L1_R1*thalf_R1 + log(2))/(number_per_nmol*(Kd_L1_R1_nM*kon_L1_R1*thalf_R1 + css_L1_free_t_nM*kon_L1_R1*thalf_R1 + log(2)))
-R1_t @ membrane_t *= free_R1_t_0
-total_R1_t_0 = free_R1_t_0 + L1_R1_t_0
-total_L1_t_0 = free_L1_t_0 + L1_R1_t_0
-
-free_S1_t_0 = css_S1_t_nM * v_t_L
-total_S1_t_0 = free_S1_t_0
-S1_t @ tox *= free_S1_t_0
-
-# Drug species
-ab_0_0_t @ tox *= 0
-ab_0_L1_t @ tox *= 0
-ab_L1_0_t @ tox *= 0
-ab_L1_L1_t @ tox *= 0
 
 # Subcutaneous depot drug
 ab_0_0_sc @ central *= 0
@@ -308,15 +229,10 @@ ab_0_0_sc -> ab_0_0_c; thalf=thalf_abs
 -> R1_d; kf=ksyn_R1_d
 -> L1_d; kf=ksyn_L1_d
 
-# tox
--> R1_t; kf=ksyn_R1_t
--> L1_t; kf=ksyn_L1_t
-
 # --- Degradation ---
 
 # central
 R1_c ->; thalf=thalf_R1
-S1_c ->; thalf=thalf_S1
 L1_c ->; thalf=thalf_L1
 L1_R1_c ->; thalf=thalf_R1
 ab_0_0_c -> ; thalf=thalf_ab_c
@@ -326,7 +242,6 @@ ab_L1_L1_c -> ; thalf=thalf_ab_c
 
 # peripheral
 R1_p ->; thalf=thalf_R1
-S1_p ->; thalf=thalf_S1
 L1_p ->; thalf=thalf_L1
 L1_R1_p ->; thalf=thalf_R1
 ab_0_0_p -> ; thalf=thalf_ab_p
@@ -336,7 +251,6 @@ ab_L1_L1_p -> ; thalf=thalf_ab_p
 
 # disease
 R1_d ->; thalf=thalf_R1
-S1_d ->; thalf=thalf_S1
 L1_d ->; thalf=thalf_L1
 L1_R1_d ->; thalf=thalf_R1
 ab_0_0_d -> ; thalf=thalf_ab_d
@@ -344,30 +258,12 @@ ab_0_L1_d -> ; thalf=thalf_ab_d
 ab_L1_0_d -> ; thalf=thalf_ab_d
 ab_L1_L1_d -> ; thalf=thalf_ab_d
 
-# tox
-R1_t ->; thalf=thalf_R1
-S1_t ->; thalf=thalf_S1
-L1_t ->; thalf=thalf_L1
-L1_R1_t ->; thalf=thalf_R1
-ab_0_0_t -> ; thalf=thalf_ab_t
-ab_0_L1_t -> ; thalf=thalf_ab_t
-ab_L1_0_t -> ; thalf=thalf_ab_t
-ab_L1_L1_t -> ; thalf=thalf_ab_t
-
-# --- Shedding ---
-
--> S1_c; kf=ksyn_S1_c
--> S1_p; kf=ksyn_S1_p
--> S1_d; kf=ksyn_S1_d
--> S1_t; kf=ksyn_S1_t
-
 # --- Binding ---
 
 # Endogenous
 L1_c + R1_c <-> L1_R1_c; kd=Kd_L1_R1_nM, kon=kon_L1_R1
 L1_p + R1_p <-> L1_R1_p; kd=Kd_L1_R1_nM, kon=kon_L1_R1
 L1_d + R1_d <-> L1_R1_d; kd=Kd_L1_R1_nM, kon=kon_L1_R1
-L1_t + R1_t <-> L1_R1_t; kd=Kd_L1_R1_nM, kon=kon_L1_R1
 
 # Antibody
 # central
@@ -388,35 +284,21 @@ ab_0_0_d + L1_d <-> ab_L1_0_d; kd=Kd_ab_L1_d_nM, kon=kon_ab_L1
 ab_0_L1_d + L1_d <-> ab_L1_L1_d; kd=Kd_ab_L1_d_nM, kon=kon_ab_L1
 ab_L1_0_d + L1_d <-> ab_L1_L1_d; kd=Kd_ab_L1_d_nM, kon=kon_ab_L1 * (valency_ab_L1 - 1)
 
-# tox
-ab_0_0_t + L1_t <-> ab_0_L1_t; kd=Kd_ab_L1_t_nM, kon=kon_ab_L1 * (valency_ab_L1 - 1)
-ab_0_0_t + L1_t <-> ab_L1_0_t; kd=Kd_ab_L1_t_nM, kon=kon_ab_L1
-ab_0_L1_t + L1_t <-> ab_L1_L1_t; kd=Kd_ab_L1_t_nM, kon=kon_ab_L1
-ab_L1_0_t + L1_t <-> ab_L1_L1_t; kd=Kd_ab_L1_t_nM, kon=kon_ab_L1 * (valency_ab_L1 - 1)
-
 # --- Transport ---
 
 # Endogenous species
-S1_c <-> S1_p; kf=kcp_S1, kr=kpc_S1
 L1_c <-> L1_p; kf=kcp_L1, kr=kpc_L1
-S1_c <-> S1_d; kf=kcd_S1, kr=kdc_S1
 L1_c <-> L1_d; kf=kcd_L1, kr=kdc_L1
-S1_c <-> S1_t; kf=kct_S1, kr=ktc_S1
-L1_c <-> L1_t; kf=kct_L1, kr=ktc_L1
 
 # Soluble antibody species
 ab_0_0_c <-> ab_0_0_p; pdist=pdist_cp_ab, tdist=tdist_cp_ab
 ab_0_0_c <-> ab_0_0_d; pdist=pdist_cd_ab, tdist=tdist_cd_ab
-ab_0_0_c <-> ab_0_0_t; pdist=pdist_ct_ab, tdist=tdist_ct_ab
 ab_0_L1_c <-> ab_0_L1_p; pdist=pdist_cp_ab, tdist=tdist_cp_ab
 ab_0_L1_c <-> ab_0_L1_d; pdist=pdist_cd_ab, tdist=tdist_cd_ab
-ab_0_L1_c <-> ab_0_L1_t; pdist=pdist_ct_ab, tdist=tdist_ct_ab
 ab_L1_0_c <-> ab_L1_0_p; pdist=pdist_cp_ab, tdist=tdist_cp_ab
 ab_L1_0_c <-> ab_L1_0_d; pdist=pdist_cd_ab, tdist=tdist_cd_ab
-ab_L1_0_c <-> ab_L1_0_t; pdist=pdist_ct_ab, tdist=tdist_ct_ab
 ab_L1_L1_c <-> ab_L1_L1_p; pdist=pdist_cp_ab, tdist=tdist_cp_ab
 ab_L1_L1_c <-> ab_L1_L1_d; pdist=pdist_cd_ab, tdist=tdist_cd_ab
-ab_L1_L1_c <-> ab_L1_L1_t; pdist=pdist_ct_ab, tdist=tdist_ct_ab
 
 # ===== Outputs ======
 
@@ -424,11 +306,9 @@ ab_L1_L1_c <-> ab_L1_L1_t; pdist=pdist_ct_ab, tdist=tdist_ct_ab
 total_L1_c_nmol :nmol = L1_c + L1_R1_c + 1*ab_0_L1_c + 1*ab_L1_0_c + 2*ab_L1_L1_c
 total_L1_p_nmol :nmol = L1_p + L1_R1_p + 1*ab_0_L1_p + 1*ab_L1_0_p + 2*ab_L1_L1_p
 total_L1_d_nmol :nmol = L1_d + L1_R1_d + 1*ab_0_L1_d + 1*ab_L1_0_d + 2*ab_L1_L1_d
-total_L1_t_nmol :nmol = L1_t + L1_R1_t + 1*ab_0_L1_t + 1*ab_L1_0_t + 2*ab_L1_L1_t
 total_L1_c_nM :nM = total_L1_c_nmol / v_c_L
 total_L1_p_nM :nM = total_L1_p_nmol / v_p_L
 total_L1_d_nM :nM = total_L1_d_nmol / v_d_L
-total_L1_t_nM :nM = total_L1_t_nmol / v_t_L
 
 # Free ligand
 free_L1_c_nmol :nmol = L1_c
@@ -437,8 +317,6 @@ free_L1_p_nmol :nmol = L1_p
 free_L1_p_nM :nM = L1_p / v_p_L
 free_L1_d_nmol :nmol = L1_d
 free_L1_d_nM :nM = L1_d / v_d_L
-free_L1_t_nmol :nmol = L1_t
-free_L1_t_nM :nM = L1_t / v_t_L
 
 # Total membrane receptor
 free_R1_c_nmol :nmol = R1_c
@@ -447,101 +325,64 @@ free_R1_p_nmol :nmol = R1_p
 free_R1_p_nM :nM = R1_p / v_p_L
 free_R1_d_nmol :nmol = R1_d
 free_R1_d_nM :nM = R1_d / v_d_L
-free_R1_t_nmol :nmol = R1_t
-free_R1_t_nM :nM = R1_t / v_t_L
 total_R1_c_nmol :nmol = R1_c + L1_R1_c
 total_R1_c_nM :nM = total_R1_c_nmol / v_c_L
 total_R1_p_nmol :nmol = R1_p + L1_R1_p
 total_R1_p_nM :nM = total_R1_p_nmol / v_p_L
 total_R1_d_nmol :nmol = R1_d + L1_R1_d
 total_R1_d_nM :nM = total_R1_d_nmol / v_d_L
-total_R1_t_nmol :nmol = R1_t + L1_R1_t
-total_R1_t_nM :nM = total_R1_t_nmol / v_t_L
-
-# Total soluble receptor
-total_S1_c_nmol :nmol = S1_c
-total_S1_c_nM :nM = total_S1_c_nmol / v_c_L
-total_S1_p_nmol :nmol = S1_p
-total_S1_p_nM :nM = total_S1_p_nmol / v_p_L
-total_S1_d_nmol :nmol = S1_d
-total_S1_d_nM :nM = total_S1_d_nmol / v_d_L
-total_S1_t_nmol :nmol = S1_t
-total_S1_t_nM :nM = total_S1_t_nmol / v_t_L
-
-# Free soluble receptor
-free_S1_c_nmol :nmol = S1_c
-free_S1_c_nM :nM = free_S1_c_nmol / v_c_L
-free_S1_p_nmol :nmol = S1_p
-free_S1_p_nM :nM = free_S1_p_nmol / v_p_L
-free_S1_d_nmol :nmol = S1_d
-free_S1_d_nM :nM = free_S1_d_nmol / v_d_L
-free_S1_t_nmol :nmol = S1_t
-free_S1_t_nM :nM = free_S1_t_nmol / v_t_L
 
 # Ligand bound to drug
 L1_bound_to_drug_c_nmol :nmol = total_L1_c_nmol - L1_c - L1_R1_c
 L1_bound_to_drug_p_nmol :nmol = total_L1_p_nmol - L1_p - L1_R1_p
 L1_bound_to_drug_d_nmol :nmol = total_L1_d_nmol - L1_d - L1_R1_d
-L1_bound_to_drug_t_nmol :nmol = total_L1_t_nmol - L1_t - L1_R1_t
 
 # Drug bound to ligand
 drug_bound_to_L1_c_nmol :nmol = ab_0_L1_c + ab_L1_0_c + ab_L1_L1_c
 drug_bound_to_L1_p_nmol :nmol = ab_0_L1_p + ab_L1_0_p + ab_L1_L1_p
 drug_bound_to_L1_d_nmol :nmol = ab_0_L1_d + ab_L1_0_d + ab_L1_L1_d
-drug_bound_to_L1_t_nmol :nmol = ab_0_L1_t + ab_L1_0_t + ab_L1_L1_t
 drug_bound_to_L1_c_nM :nM = drug_bound_to_L1_c_nmol / v_c_L
 drug_bound_to_L1_p_nM :nM = drug_bound_to_L1_p_nmol / v_p_L
 drug_bound_to_L1_d_nM :nM = drug_bound_to_L1_d_nmol / v_d_L
-drug_bound_to_L1_t_nM :nM = drug_bound_to_L1_t_nmol / v_t_L
 
 # Total soluble drug
 total_soluble_drug_c_nM :nM = (ab_0_0_c + ab_0_L1_c + ab_L1_0_c + ab_L1_L1_c) / v_c_L
 total_soluble_drug_p_nM :nM = (ab_0_0_p + ab_0_L1_p + ab_L1_0_p + ab_L1_L1_p) / v_p_L
 total_soluble_drug_d_nM :nM = (ab_0_0_d + ab_0_L1_d + ab_L1_0_d + ab_L1_L1_d) / v_d_L
-total_soluble_drug_t_nM :nM = (ab_0_0_t + ab_0_L1_t + ab_L1_0_t + ab_L1_L1_t) / v_t_L
 total_soluble_drug_c_ngmL :(ng/mL) = total_soluble_drug_c_nM * MW_gmol / 1000:(mL/L)
 total_soluble_drug_p_ngmL :(ng/mL) = total_soluble_drug_p_nM * MW_gmol / 1000:(mL/L)
 total_soluble_drug_d_ngmL :(ng/mL) = total_soluble_drug_d_nM * MW_gmol / 1000:(mL/L)
-total_soluble_drug_t_ngmL :(ng/mL) = total_soluble_drug_t_nM * MW_gmol / 1000:(mL/L)
 
 # Unbound drug
 unbound_drug_c_nM :nM = ab_0_0_c / v_c_L
 unbound_drug_p_nM :nM = ab_0_0_p / v_p_L
 unbound_drug_d_nM :nM = ab_0_0_d / v_d_L
-unbound_drug_t_nM :nM = ab_0_0_t / v_t_L
 unbound_drug_c_ngmL :(ng/mL) = unbound_drug_c_nM * MW_gmol / 1000:(mL/L)
 unbound_drug_p_ngmL :(ng/mL) = unbound_drug_p_nM * MW_gmol / 1000:(mL/L)
 unbound_drug_d_ngmL :(ng/mL) = unbound_drug_d_nM * MW_gmol / 1000:(mL/L)
-unbound_drug_t_ngmL :(ng/mL) = unbound_drug_t_nM * MW_gmol / 1000:(mL/L)
 
 # Total drug
 total_drug_c_nmol :nmol = ab_0_0_c + ab_0_L1_c + ab_L1_0_c + ab_L1_L1_c
 total_drug_p_nmol :nmol = ab_0_0_p + ab_0_L1_p + ab_L1_0_p + ab_L1_L1_p
 total_drug_d_nmol :nmol = ab_0_0_d + ab_0_L1_d + ab_L1_0_d + ab_L1_L1_d
-total_drug_t_nmol :nmol = ab_0_0_t + ab_0_L1_t + ab_L1_0_t + ab_L1_L1_t
 total_drug_c_nM :nM = total_drug_c_nmol / v_c_L
 total_drug_p_nM :nM = total_drug_p_nmol / v_p_L
 total_drug_d_nM :nM = total_drug_d_nmol / v_d_L
-total_drug_t_nM :nM = total_drug_t_nmol / v_t_L
 total_drug_c_mg :mg = total_drug_c_nmol * (1e3/1e9):(mmol/nmol) * MW_gmol
 total_drug_p_mg :mg = total_drug_p_nmol * (1e3/1e9):(mmol/nmol) * MW_gmol
 total_drug_d_mg :mg = total_drug_d_nmol * (1e3/1e9):(mmol/nmol) * MW_gmol
-total_drug_t_mg :mg = total_drug_t_nmol * (1e3/1e9):(mmol/nmol) * MW_gmol
 
 # Inhibition: percent reduction of ligand-receptor complex relative to pretreatment steady state
 inhibition_L1_R1_c_perc :1 = 100 * (1 - L1_R1_c / (L1_R1_c[0:s] + 1e-16:nmol))
 inhibition_L1_R1_p_perc :1 = 100 * (1 - L1_R1_p / (L1_R1_p[0:s] + 1e-16:nmol))
 inhibition_L1_R1_d_perc :1 = 100 * (1 - L1_R1_d / (L1_R1_d[0:s] + 1e-16:nmol))
-inhibition_L1_R1_t_perc :1 = 100 * (1 - L1_R1_t / (L1_R1_t[0:s] + 1e-16:nmol))
 
 # Target ligand engagement: percent of ligand bound by drug
 target_engagement_L1_c_perc :1 = 100 * L1_bound_to_drug_c_nmol / (total_L1_c_nmol + 1e-16:nmol)
 target_engagement_L1_p_perc :1 = 100 * L1_bound_to_drug_p_nmol / (total_L1_p_nmol + 1e-16:nmol)
 target_engagement_L1_d_perc :1 = 100 * L1_bound_to_drug_d_nmol / (total_L1_d_nmol + 1e-16:nmol)
-target_engagement_L1_t_perc :1 = 100 * L1_bound_to_drug_t_nmol / (total_L1_t_nmol + 1e-16:nmol)
 
 # Activation: percent of receptor bound by ligand or drug
 activation_R1_c_perc :1 = 100 * (total_R1_c_nmol - R1_c) / (total_R1_c_nmol + 1e-16:nmol)
 activation_R1_p_perc :1 = 100 * (total_R1_p_nmol - R1_p) / (total_R1_p_nmol + 1e-16:nmol)
 activation_R1_d_perc :1 = 100 * (total_R1_d_nmol - R1_d) / (total_R1_d_nmol + 1e-16:nmol)
-activation_R1_t_perc :1 = 100 * (total_R1_t_nmol - R1_t) / (total_R1_t_nmol + 1e-16:nmol)
