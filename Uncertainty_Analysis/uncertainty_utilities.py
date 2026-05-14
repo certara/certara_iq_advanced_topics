@@ -20,8 +20,12 @@ def covariance_matrix(
     Returns
     -------
     np.ndarray of shape (n_params, n_params)
-        Covariance matrix in the natural (unscaled) parameter space.
-        Row/column order matches the keys of `_fit_global_parameters`.
+        Covariance matrix in the optimizer's transformed parameter space.
+        For parameters with ``loguniform`` priors the optimizer works in
+        log-space, so the returned matrix is a log-space covariance; callers
+        must exponentiate samples drawn from this distribution to recover
+        natural-scale values.  Row/column order matches the keys of
+        ``_fit_global_parameters``.
     """
     raw_fim = self._fim().output_or_raise()
     fit_global_parameters = self._fit_global_parameters
