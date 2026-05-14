@@ -209,14 +209,14 @@ large negative time derivatives.
 
 #### Negative exponents
 
-If a quantity is raised to a negative power, the derivative becomes
+If a quantity is raised to a power less than 1, the derivative becomes
 unbounded as the quantity approaches zero. Because the solver uses the system Jacobian, 
 NaN or infinite Jacobian entries from such terms force premature termination.
 
 **Symptom:** "Solver cannot progress" error with no obvious large time
 derivatives or negative states.
 
-**Diagnosis:** Search the model file for exponents that could be negative —
+**Diagnosis:** Search the model file for exponents that could be less than 1 —
 either hard-coded or parameterized — and whose base expression could reach zero.
 
 **Resolution:** Add a small constant inside the exponentiated term to prevent
