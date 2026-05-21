@@ -1,0 +1,8 @@
+group,parameter,value,unit,is_fit,prior_distribution,lower_bound,upper_bound,location,scale
+treated,AMT,10,mg * kg^-1,FALSE,uniform,0,10,,
+untreated,AMT,0,mg * kg^-1,FALSE,uniform,0,10,,
+*,V0,5307.11348,mm^3,TRUE,uniform,50,20000,,
+*,mu,0.036388079,1/d,TRUE,uniform,0.001,0.1,,
+*,Tc_max,3.854901919,1,TRUE,uniform,0.83,6.43,,
+*,APC_max,0.915452792,1,TRUE,uniform,0.0001,5,,
+*,kkill,0.90428418,1/d,TRUE,uniform,0.0001,0.9,,
