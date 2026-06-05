@@ -1,0 +1,55 @@
+%% ReactionModel@2
+
+# Two-compartment pharmacokinetic model for a monoclonal antibody (150 kDa)
+#
+# Structure:
+#    central (plasma)  <--[k12/k21]-->  peripheral (tissue)
+#          |
+#        [kel]
+#         sink
+#
+# Dosing:
+#   IV_mg  — intravenous bolus dose in mg (enters central directly)
+#
+# States are tracked in nmol; time unit is hours.
+# Outputs are plasma and tissue concentrations in nM (= nmol/L).
+
+time_unit          = hr
+default_state_unit = nmol
+
+% components
+
+# ── Parameters ─────────────────────────────────────────────────────────────────
+CL           := 0.012:(L/hr)    # Systemic clearance
+Q            := 0.016:(L/hr)    # Inter-compartmental clearance
+Vc           := 3.0:L           # Central volume of distribution (plasma)
+Vp           := 4.0:L           # Peripheral volume of distribution (tissue)
+mw           := 150000:(g/mol)  # Antibody molecular weight (150 kDa)
+
+# ── Unit conversion constants ──────────────────────────────────────────────────
+nmol_per_mol := 1e9:(nmol/mol)
+mg_per_g     := 1e3:(mg/g)
+
+# ── Derived rate constants ─────────────────────────────────────────────────────
+kel          = CL / Vc           # Elimination rate constant (1/hr)
+k12          = Q / Vc            # Central-to-peripheral transfer rate (1/hr)
+k21          = Q / Vp            # Peripheral-to-central transfer rate (1/hr)
+
+# ── Compartments ───────────────────────────────────────────────────────────────
+central~3    = Vc    # Central compartment (plasma / blood)
+peripheral~3 = Vp    # Peripheral compartment (tissue)
+
+# ── States ─────────────────────────────────────────────────────────────────────
+Ab_central@central*       = 0:nmol  # Antibody in central (plasma) compartment
+Ab_peripheral@peripheral* = 0:nmol  # Antibody in peripheral (tissue) compartment
+
+# ── Dose Routes ────────────────────────────────────────────────────────────────
+IV_mg: mg = @();   Ab_central += amt * nmol_per_mol / (mw * mg_per_g)  # IV bolus (mg)
+
+# ── Reactions ──────────────────────────────────────────────────────────────────
+Ab_central <-> Ab_peripheral;     kf = k12, kr = k21    # Distribution to/from peripheral compartment
+Ab_central ->;                    kf = kel              # Systemic elimination
+
+# ── Outputs ────────────────────────────────────────────────────────────────────
+C_central_nM    = Ab_central / Vc      # Plasma concentration (nM = nmol/L)
+C_peripheral_nM = Ab_peripheral / Vp   # Tissue concentration (nM = nmol/L)

@@ -10,6 +10,7 @@ python = { version = "3.14.*" }
 abm = "==2.2.2"
 ipykernel = "==7.*"
 plotnine = "==0.15.*"
+seaborn = "==0.13.*"
 utilities = { path = "utilities", editable = true }
 
 [system-requirements]
