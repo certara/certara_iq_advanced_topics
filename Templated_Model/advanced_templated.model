@@ -5,9 +5,9 @@ time_unit = s
 default_state_unit = nmol
 
 % template_globals
-comp = [c, p, d, t]
-compartment = [central, peripheral, disease, tox]
-target = [p, d, t]
+comp = [c, p, d]
+compartment = [central, peripheral, disease]
+target = [p, d]
 drug_arm = [0, L1]
 
 % components
@@ -15,21 +15,17 @@ drug_arm = [0, L1]
 v_c_L :L := 2.5
 v_p_L :L := 12.8
 v_d_L :L := 0.1
-v_t_L :L := 0.1
 css_R1_total_{comp}_rpc :1 := 10000
-css_S1_{comp}_nM :nM := 0
 css_L1_free_{comp}_nM :nM := 0.05
 thalf_R1_hr :hr := 1
-thalf_S1_hr :hr := 0.5
 thalf_L1_hr :hr := 0.5
 thalf_ab_day :d := 28
 scale_thalf_ab_{comp} :1 := 1
-tdist_c{target}_{[S1, L1]@1}_hr :hr := 30
+tdist_c{target}_L1_hr :hr := 30
 pdist_cp_ab :1 := 0.190625
 pdist_cd_ab :1 := 0.3
-pdist_ct_ab :1 := 0.3
 tdist_c{target}_ab_hr :hr := 30
-R_cell_number_{comp@1} :1 := {[3000000000.0, 13000000000.0, 100000000.0, 100000000.0]@1}
+R_cell_number_{comp@1} :1 := {[3000000000.0, 13000000000.0, 100000000.0]@1}
 R_cell_diameter_um :um = 10
 kon_ab_L1 :(1/nM/s) := 1e-3
 Kd_ab_L1_nM :nM := 0.1
@@ -50,16 +46,15 @@ Kd_ab_L1_{comp}_nM = Kd_ab_L1_nM * scale_Kd_ab_L1_{comp}
 thalf_ab_{comp}_day = thalf_ab_day * scale_thalf_ab_{comp}
 sec_per_hr = 3600:(s/hr)
 sec_per_day = sec_per_hr * 24: (hr/d)
-thalf_{[abs, L1, R1, S1]@1} = thalf_{[abs_day, L1_hr, R1_hr, S1_hr]@1} * sec_per_{[day, hr, hr, hr]@1}
-tdist_c{target}_{[L1, S1]@1} = tdist_c{target}_{[L1, S1]@1}_hr * sec_per_hr
+thalf_{[abs, L1, R1]@1} = thalf_{[abs_day, L1_hr, R1_hr]@1} * sec_per_{[day, hr, hr]@1}
+tdist_c{target}_L1 = tdist_c{target}_L1_hr * sec_per_hr
 thalf_ab_{comp} = thalf_ab_{comp}_day * sec_per_day
 tdist_c{target}_ab = tdist_c{target}_ab_hr * sec_per_hr
 number_per_nmol = 6.022e14 :(1/nmol)
 ksyn_L1_{comp} = css_L1_free_{comp}_nM*log(2)*(Kd_L1_R1_nM*kon_L1_R1*number_per_nmol*thalf_R1*v_{comp}_L + R_cell_number_{comp}*css_R1_total_{comp}_rpc*kon_L1_R1*thalf_L1 + css_L1_free_{comp}_nM*kon_L1_R1*number_per_nmol*thalf_R1*v_{comp}_L + log(2)*number_per_nmol*v_{comp}_L)/(number_per_nmol*thalf_L1*(Kd_L1_R1_nM*kon_L1_R1*thalf_R1 + css_L1_free_{comp}_nM*kon_L1_R1*thalf_R1 + log(2)))
 ksyn_R1_{comp} = R_cell_number_{comp}*css_R1_total_{comp}_rpc*log(2)/(number_per_nmol*thalf_R1)
-ksyn_S1_{comp} = css_S1_{comp}_nM*log(2)*v_{comp}_L/thalf_S1
-kc{target}_{[L1, S1]@1}  =  css_{[L1_free, S1]@1}_{target}_nM*v_{target}_L*log(2)/(tdist_c{target}_{[L1, S1]@1}*(css_{[L1_free, S1]@1}_c_nM*v_c_L + css_{[L1_free, S1]@1}_{target}_nM*v_{target}_L + 1e-16:nmol))
-k{target}c_{[L1, S1]@1}  =  css_{[L1_free, S1]@1}_c_nM*v_c_L*log(2)/(tdist_c{target}_{[L1, S1]@1}*(css_{[L1_free, S1]@1}_c_nM*v_c_L + css_{[L1_free, S1]@1}_{target}_nM*v_{target}_L + 1e-16:nmol))
+kc{target}_L1  =  css_L1_free_{target}_nM*v_{target}_L*log(2)/(tdist_c{target}_L1*(css_L1_free_c_nM*v_c_L + css_L1_free_{target}_nM*v_{target}_L + 1e-16:nmol))
+k{target}c_L1  =  css_L1_free_c_nM*v_c_L*log(2)/(tdist_c{target}_L1*(css_L1_free_c_nM*v_c_L + css_L1_free_{target}_nM*v_{target}_L + 1e-16:nmol))
 
 # Compartments and states
 {compartment@1} ~ 3 = v_{comp@1}_L
@@ -75,9 +70,6 @@ free_R1_{comp}_0 = R_cell_number_{comp}*css_R1_total_{comp}_rpc*(Kd_L1_R1_nM*kon
 R1_{comp} @ membrane_{comp} *= free_R1_{comp}_0
 total_R1_{comp}_0 = free_R1_{comp}_0 + L1_R1_{comp}_0
 total_L1_{comp}_0 = free_L1_{comp}_0 + L1_R1_{comp}_0
-free_S1_{comp}_0 = css_S1_{comp}_nM * v_{comp}_L
-total_S1_{comp}_0 = free_S1_{comp}_0
-S1_{comp@1} @ {compartment@1} *= free_S1_{comp@1}_0
 ab_{drug_arm@1}_{drug_arm@2}_{comp@3} @ {compartment@3} *= 0
 ab_0_0_sc @ central *= 0
 
@@ -85,13 +77,12 @@ ab_0_0_sc @ central *= 0
 IV_mg :mg = @(); ab_0_0_c  += amt * 1e6:(ng/mg) / MW_gmol
 SC_mg :mg = @(); ab_0_0_sc += amt * F * 1e6:(ng/mg) / MW_gmol
 ab_0_0_sc -> ab_0_0_c; thalf=thalf_abs
--> {[R1, L1, S1]@1}_{comp}; kf=ksyn_{[R1, L1, S1]@1}_{comp}
-{[R1, S1, L1, L1_R1]@1}_{comp} ->; thalf=thalf_{[R1, S1, L1, R1]@1}
+-> {[R1, L1]@1}_{comp}; kf=ksyn_{[R1, L1]@1}_{comp}
+{[R1, L1, L1_R1]@1}_{comp} ->; thalf=thalf_{[R1, L1, R1]@1}
 ab_{drug_arm@1}_{drug_arm@2}_{comp@3} -> ; thalf=thalf_ab_{comp@3}
 L1_{comp} + R1_{comp} <-> L1_R1_{comp}; kd=Kd_L1_R1_nM, kon=kon_L1_R1
 ab_{[0, L1]@1}_{[0, 0]@1}_{comp} + L1_{comp} <-> ab_{[0, L1]@1}_{[L1, L1]@1}_{comp}; kd=Kd_ab_L1_{comp}_nM, kon=kon_ab_L1 * (valency_ab_L1 - 1)
 ab_{[0, 0]@1}_{[0, L1]@1}_{comp} + L1_{comp} <-> ab_{[L1, L1]@1}_{[0, L1]@1}_{comp}; kd=Kd_ab_L1_{comp}_nM, kon=kon_ab_L1
-S1_c <-> S1_{target}; kf=kc{target}_S1, kr=k{target}c_S1
 L1_c <-> L1_{target}; kf=kc{target}_L1, kr=k{target}c_L1
 ab_{drug_arm@1}_{drug_arm@2}_c <-> ab_{drug_arm@1}_{drug_arm@2}_{target@3}; pdist=pdist_c{target@3}_ab, tdist=tdist_c{target@3}_ab
 
@@ -104,10 +95,6 @@ free_R1_{comp}_nmol :nmol = R1_{comp}
 free_R1_{comp}_nM :nM = R1_{comp} / v_{comp}_L
 total_R1_{comp}_nmol :nmol = R1_{comp} + L1_R1_{comp}
 total_R1_{comp}_nM :nM = total_R1_{comp}_nmol / v_{comp}_L
-total_S1_{comp}_nmol :nmol = S1_{comp}
-total_S1_{comp}_nM :nM = total_S1_{comp}_nmol / v_{comp}_L
-free_S1_{comp}_nmol :nmol = S1_{comp}
-free_S1_{comp}_nM :nM = free_S1_{comp}_nmol / v_{comp}_L
 L1_bound_to_drug_{comp}_nmol :nmol = total_L1_{comp}_nmol - L1_{comp} - L1_R1_{comp}
 drug_bound_to_L1_{comp}_nmol :nmol = ab_0_L1_{comp} + ab_L1_0_{comp} + ab_L1_L1_{comp}
 drug_bound_to_L1_{comp}_nM :nM = drug_bound_to_L1_{comp}_nmol / v_{comp}_L
